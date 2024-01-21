@@ -5,3 +5,9 @@
 まず、Laravelプロジェクトを作成します。
 
 composer create-project laravel/laravel gohan-ok
+
+
+## 2,依存関係のインストール
+次に、Node.jsの依存関係をインストールします。
+
+npm install
