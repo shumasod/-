@@ -11,3 +11,10 @@ composer create-project laravel/laravel gohan-ok
 次に、Node.jsの依存関係をインストールします。
 
 npm install
+
+##3. ルートの設定
+次に、ルートの設定を行います。
+
+Route::get('/', function () {
+    return view('welcome');
+});
