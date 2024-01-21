@@ -18,3 +18,15 @@ npm install
 Route::get('/', function () {
     return view('welcome');
 });
+
+## 4. ビューの作成
+次に、ビューを作成します。
+
+resources/views/welcome.blade.php
+<html>
+<head>
+    <title>ごはんですよ！</title>
+</head>
+<body>
+    <h1>ごはんですよ！</h1>
+</body>
