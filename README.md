@@ -30,5 +30,6 @@ resources/views/welcome.blade.php
 <body>
     <h1>ごはんですよ！</h1>
 </body>
-##5. JavaScriptの作成
+    
+## 5. JavaScriptの作成
 次に、JavaScriptを作成します。
