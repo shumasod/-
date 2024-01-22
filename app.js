@@ -20,3 +20,10 @@ app.component('gohan-ok', {
         }
     }
 });
+
+// 18時になると、ごはんですよ！とアラートを表示する
+setInterval(() => {
+    if (new Date().getHours() === 18) {
+        app.$refs.gohanOk.sayGohanOk();
+    }
+}, 1000);
