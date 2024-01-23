@@ -62,3 +62,14 @@ setInterval(() => {
         app.$refs.gohanOk.sayGohanOk();
     }
 }, 1000);****
+
+
+## 6. TailwindCSSの設定
+
+resources/css/app.css
+@import "~tailwindcss/dist/tailwind.css";
+
+## 7. 実行
+最後に、アプリケーションを実行します。
+
+php artisan serve
