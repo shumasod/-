@@ -73,3 +73,5 @@ resources/css/app.css
 最後に、アプリケーションを実行します。
 
 php artisan serve
+
+npm run dev
