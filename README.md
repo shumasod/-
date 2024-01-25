@@ -69,7 +69,7 @@ setInterval(() => {
 
 ## 6. TailwindCSSの設定
 
-resources/css/app.css
+### resources/css/app.css
 @import "~tailwindcss/dist/tailwind.css";
 
 ## 7. 実行
