@@ -1,0 +1,22 @@
+<canvas id="canvas" width="500" height="500"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// データの取得
+const fetchData = async () => {
+  const response = await fetch('/data');
+  const data = await response.json();
+
+  // アニメーションの開始
+  animate(data);
+};
+
+// アニメーション
+const animate = (data) => {
+  // ...
+};
+
+fetchData();
+</script>
