@@ -1,0 +1,28 @@
+// ライブラリのインポート
+const express = require('express');
+const app = express();
+const port = 3000;
+
+// スプレッドシートとの連携
+const {google} = require('googleapis');
+const sheets = google.sheets('v4');
+const spreadsheetId = 'YOUR_SPREADSHEET_ID';
+
+// データの読み込み
+app.get('/data', async (req, res) => {
+  const auth = await google.auth.getClient({
+    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
+  });
+  const response = await sheets.spreadsheets.values.get({
+    auth,
+    spreadsheetId,
+    range: 'Sheet1!A:F',
+  });
+  const data = response.data.values;
+  res.json(data);
+});
+
+// サーバー起動
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
