@@ -33,7 +33,7 @@ resources/views/welcome.blade.php
     <h1>ごはんですよ！</h1>
 </body>
     
-## 5. JavaScriptの作成
+## 5. JSの作成
 次に、JavaScriptを作成します。
 
 import Vue from 'vue';
