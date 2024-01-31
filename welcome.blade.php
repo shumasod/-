@@ -4,5 +4,5 @@ resources/views/welcome.blade.php
     <title>ごはんですよ！</title>
 </head>
 <body>
-    <h1>ごはんですよ！</h1>
+    <h1>ごはんなんですよ！</h1>
 </body>
