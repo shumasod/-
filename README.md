@@ -3,7 +3,8 @@
 #### 事前にphpは8.1
 ##### composerをインストールしておく
 
-#### Laravelsail環境を構築する必要
+#### Laravelsail環境を構築
+#### dockerかRancherか
 
 
 ## 1,プロジェクトの作成
