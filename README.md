@@ -4,7 +4,7 @@
 ##### composerをインストールしておく
 
 #### Laravelsail環境を構築
-#### dockerかRancherか
+#### dockerかRancherかメモリを確認
 
 
 ## 1,プロジェクトの作成
