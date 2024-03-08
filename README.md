@@ -1,7 +1,8 @@
 # ごはんですよとメッセージを表示するサイトを作成するよ
 
-#### 事前にphpは8.2
-##### composerをインストールしておく
+#### 言語はphp
+##### composerやartisanは必要
+
 
 #### Laravelsail環境を構築
 #### dockerメモリを確認
