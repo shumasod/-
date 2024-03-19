@@ -5,7 +5,7 @@
 
 
 #### Laravelsail環境を構築
-#### dockerメモリを確認
+#### dockerDeskTopを使用
 
 
 ## 1,プロジェクトの作成
@@ -20,7 +20,7 @@ composer create-project laravel/laravel gohan-ok
 npm install
 
 ## 3. ルートの設定
-次に、ルートの設定を行います。
+次に、ルートの（web.php)設定を行います。
 
 Route::get('/', function () {
     return view('welcome');
