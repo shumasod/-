@@ -37,15 +37,11 @@ resources/views/welcome.blade.php
 <body>
     <h1>ごはんですよ！</h1>
 </body>
+ここらへんの部分のフォームはboottrapを使用して実装していく予定
+
     
-## 5. JSの作成
+## 5. JSの作成(別案を検討中）
 次に、JavaScriptを作成します。
-
-import Vue from 'vue';
-
-const app = new Vue({
-    el: '#app',
-});
 
 app.component('gohan-ok', {
     template: `
