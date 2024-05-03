@@ -78,3 +78,5 @@ setInterval(() => {
 php artisan serve
 
 npm run dev
+
+#### マイグレーションファイルの実行はどこかのタイミングで行う
