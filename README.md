@@ -4,7 +4,7 @@
 ##### composerやartisanは必要
 
 
-#### Laravelsail環境を構築
+#### Laravel_Sail環境を構築
 #### dockerDeskTopを使用
 
 
