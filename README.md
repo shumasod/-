@@ -40,8 +40,8 @@ resources/views/welcome.blade.php
 ここらへんの部分のフォームはboottrapを使用して実装していく予定
 
     
-## 5. JSの作成(別案を検討中）
-次に、JavaScriptを作成します。
+## 5. bladeの作成(別案を検討中）
+次に、bladeをベースにフロントを作成していく。
 
 app.component('gohan-ok', {
     template: `
