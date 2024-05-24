@@ -43,21 +43,47 @@ resources/views/welcome.blade.php
 ## 5. bladeの作成(別案を検討中）
 次に、bladeをベースにフロントを作成していく。
 
-app.component('gohan-ok', {
-    template: `
-        <div>
-            <h1>ごはんですよ！</h1>
-        </div>
-    `,
-    mounted() {
-        this.sayGohanOk();
-    },
-    methods: {
-        sayGohanOk() {
-            alert('ごはんですよ！');
-        }
+<script>
+import Vue from 'vue'
+import { Library } from '@fortawesome/fontawesome-svg-core'
+import { faUtensils } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+Library.add(faUtensils)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+Vue.component('gohan-ok', {
+  template: `
+    <div>
+      <h1>{{ showGohanText ? '🍱ごはんですよ' : '' }}</h1>
+      <div :style="{ fontSize: '5rem', fontFamily: 'cursive' }">{{ showGohanText ? '🍱ごはんですよ' : '' }}</div>
+    </div>
+  `,
+  data() {
+    return {
+      showGohanText: false
     }
-});
+  },
+  mounted() {
+    this.checkTime()
+    setInterval(this.checkTime, 60000) // 1分ごとに時間をチェック
+  },
+  methods: {
+    checkTime() {
+      const now = new Date()
+      const hour = now.getHours()
+      const minute = now.getMinutes()
+
+      if (hour === 18 && minute === 0) {
+        this.showGohanText = true
+        alert('ごはんですよ!')
+      } else {
+        this.showGohanText = false
+      }
+    }
+  }
+})
+</script>
 
 // 18時になると、ごはんですよ！とアラートを表示する
 setInterval(() => {
