@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { PhoneCall, MessageSquare, HelpCircle, ChevronRight, ArrowLeft, Home } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { PhoneCall, MessageSquare, HelpCircle, ChevronRight, ArrowLeft, Home, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -8,6 +8,36 @@ const IVRSystem = () => {
   const [currentStep, setCurrentStep] = useState('main');
   const [history, setHistory] = useState([]);
   const [alert, setAlert] = useState(null);
+  const [customerInfo, setCustomerInfo] = useState(null);
+
+  useEffect(() => {
+    const initializeCCP = async () => {
+      // Amazon Connect Streams APIの初期化
+      const connectUrl = "https://your-connect-instance.awsapps.com/connect/ccp-v2/";
+      connect.core.initCCP(document.getElementById("ccp-container"), {
+        ccpUrl: connectUrl,
+        loginPopup: true,
+        softphone: {
+          allowFramedSoftphone: true
+        }
+      });
+
+      // コンタクトイベントのリスナーを設定
+      connect.contact((contact) => {
+        contact.onConnecting((contact) => {
+          const attributes = contact.getAttributes();
+          setCustomerInfo({
+            name: attributes.customerName?.value || "Unknown",
+            phone: contact.getInitialConnection().getAddress().phoneNumber,
+            accountStatus: attributes.accountStatus?.value || "Unknown",
+            lastPurchase: attributes.lastPurchase?.value || "N/A"
+          });
+        });
+      });
+    };
+
+    initializeCCP();
+  }, []);
 
   const handleOptionClick = useCallback((option) => {
     setHistory((prevHistory) => [...prevHistory, currentStep]);
@@ -57,6 +87,25 @@ const IVRSystem = () => {
     ));
   }, [handleOptionClick]);
 
+  const renderCustomerInfo = () => {
+    if (!customerInfo) return null;
+
+    return (
+      <Card className="mb-4">
+        <CardHeader className="flex items-center">
+          <User className="mr-2" size={18} />
+          <h3 className="font-bold">顧客情報</h3>
+        </CardHeader>
+        <CardContent>
+          <p><strong>名前:</strong> {customerInfo.name}</p>
+          <p><strong>電話番号:</strong> {customerInfo.phone}</p>
+          <p><strong>アカウント状態:</strong> {customerInfo.accountStatus}</p>
+          <p><strong>最終購入:</strong> {customerInfo.lastPurchase}</p>
+        </CardContent>
+      </Card>
+    );
+  };
+
   const renderContent = useCallback(() => {
     const options = {
       main: [
@@ -101,33 +150,37 @@ const IVRSystem = () => {
   }, [currentStep, renderOptions]);
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-center font-bold text-xl flex items-center justify-center">
-        <PhoneCall className="mr-2" size={24} />
-        IVRシステム
-      </CardHeader>
-      <CardContent>
-        {alert && (
-          <Alert className="mb-4">
-            <AlertTitle>{alert.title}</AlertTitle>
-            <AlertDescription>{alert.description}</AlertDescription>
-          </Alert>
-        )}
-        {renderContent()}
-      </CardContent>
-      <CardFooter className="justify-between">
-        {history.length > 0 && (
-          <Button variant="outline" onClick={handleBack}>
-            <ArrowLeft className="mr-2" size={18} />
-            戻る
+    <div className="flex">
+      <div id="ccp-container" style={{ width: '320px', height: '465px' }}></div>
+      <Card className="w-full max-w-md mx-auto ml-4">
+        <CardHeader className="text-center font-bold text-xl flex items-center justify-center">
+          <PhoneCall className="mr-2" size={24} />
+          IVRシステム
+        </CardHeader>
+        <CardContent>
+          {renderCustomerInfo()}
+          {alert && (
+            <Alert className="mb-4">
+              <AlertTitle>{alert.title}</AlertTitle>
+              <AlertDescription>{alert.description}</AlertDescription>
+            </Alert>
+          )}
+          {renderContent()}
+        </CardContent>
+        <CardFooter className="justify-between">
+          {history.length > 0 && (
+            <Button variant="outline" onClick={handleBack}>
+              <ArrowLeft className="mr-2" size={18} />
+              戻る
+            </Button>
+          )}
+          <Button variant="outline" onClick={handleMainMenu}>
+            <Home className="mr-2" size={18} />
+            メインメニュー
           </Button>
-        )}
-        <Button variant="outline" onClick={handleMainMenu}>
-          <Home className="mr-2" size={18} />
-          メインメニュー
-        </Button>
-      </CardFooter>
-    </Card>
+        </CardFooter>
+      </Card>
+    </div>
   );
 };
 
