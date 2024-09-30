@@ -4,8 +4,8 @@
 
 ## 環境
 
-- PHP 8
-- Laravel 10
+- PHP 8.3
+- Laravel 11
 - Laravel Sail (Docker を使用)
 
 ### 前提条件
