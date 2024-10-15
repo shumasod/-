@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>システム</title>
+    <title>銀行システム</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Meiryo UI", "メイリオ", Meiryo, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
@@ -84,77 +84,80 @@
     </div>
 
     <script>
-        // 簡易的なデータ管理（実際のアプリケーションではサーバーサイドで管理します）
-        let accounts = [];
+        // サンドボックス用の安全なコード
+        (function() {
+            // 簡易的なデータ管理（実際のアプリケーションではサーバーサイドで管理します）
+            let accounts = [];
 
-        document.getElementById('createAccountForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            let accountNumber = document.getElementById('newAccountNumber').value;
-            let ownerName = document.getElementById('newOwnerName').value;
-            let balance = parseFloat(document.getElementById('initialBalance').value);
-            
-            accounts.push({accountNumber, ownerName, balance});
-            showMessage(`新規口座が開設されました。口座番号: ${accountNumber}`);
-            this.reset();
-        });
-
-        document.getElementById('depositBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            transaction('deposit');
-        });
-
-        document.getElementById('withdrawBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            transaction('withdraw');
-        });
-
-        function transaction(type) {
-            let accountNumber = document.getElementById('accountNumber').value;
-            let amount = parseFloat(document.getElementById('amount').value);
-            let account = accounts.find(a => a.accountNumber === accountNumber);
-            
-            if (account) {
-                if (type === 'deposit') {
-                    account.balance += amount;
-                    showMessage(`${amount}円が預け入れられました。新しい残高: ${account.balance}円`);
-                } else {
-                    if (account.balance >= amount) {
-                        account.balance -= amount;
-                        showMessage(`${amount}円が引き出されました。新しい残高: ${account.balance}円`);
-                    } else {
-                        showMessage('残高不足です。');
-                    }
-                }
-            } else {
-                showMessage('口座が見つかりません。');
-            }
-            document.getElementById('transactionForm').reset();
-        }
-
-        document.getElementById('balanceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            let accountNumber = document.getElementById('balanceAccountNumber').value;
-            let account = accounts.find(a => a.accountNumber === accountNumber);
-            
-            if (account) {
-                showMessage(`口座残高: ${account.balance}円`);
-            } else {
-                showMessage('口座が見つかりません。');
-            }
-            this.reset();
-        });
-
-        document.getElementById('listAccountsBtn').addEventListener('click', function() {
-            let list = document.getElementById('accountList');
-            list.innerHTML = '<h2>口座一覧</h2>';
-            accounts.forEach(account => {
-                list.innerHTML += `<p>口座番号: ${account.accountNumber}, 所有者: ${account.ownerName}, 残高: ${account.balance}円</p>`;
+            document.getElementById('createAccountForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                let accountNumber = document.getElementById('newAccountNumber').value;
+                let ownerName = document.getElementById('newOwnerName').value;
+                let balance = parseFloat(document.getElementById('initialBalance').value);
+                
+                accounts.push({accountNumber, ownerName, balance});
+                showMessage(`新規口座が開設されました。口座番号: ${accountNumber}`);
+                this.reset();
             });
-        });
 
-        function showMessage(msg) {
-            document.getElementById('message').innerHTML = `<p>${msg}</p>`;
-        }
+            document.getElementById('depositBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                transaction('deposit');
+            });
+
+            document.getElementById('withdrawBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                transaction('withdraw');
+            });
+
+            function transaction(type) {
+                let accountNumber = document.getElementById('accountNumber').value;
+                let amount = parseFloat(document.getElementById('amount').value);
+                let account = accounts.find(a => a.accountNumber === accountNumber);
+                
+                if (account) {
+                    if (type === 'deposit') {
+                        account.balance += amount;
+                        showMessage(`${amount}円が預け入れられました。新しい残高: ${account.balance}円`);
+                    } else {
+                        if (account.balance >= amount) {
+                            account.balance -= amount;
+                            showMessage(`${amount}円が引き出されました。新しい残高: ${account.balance}円`);
+                        } else {
+                            showMessage('残高不足です。');
+                        }
+                    }
+                } else {
+                    showMessage('口座が見つかりません。');
+                }
+                document.getElementById('transactionForm').reset();
+            }
+
+            document.getElementById('balanceForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                let accountNumber = document.getElementById('balanceAccountNumber').value;
+                let account = accounts.find(a => a.accountNumber === accountNumber);
+                
+                if (account) {
+                    showMessage(`口座残高: ${account.balance}円`);
+                } else {
+                    showMessage('口座が見つかりません。');
+                }
+                this.reset();
+            });
+
+            document.getElementById('listAccountsBtn').addEventListener('click', function() {
+                let list = document.getElementById('accountList');
+                list.innerHTML = '<h2>口座一覧</h2>';
+                accounts.forEach(account => {
+                    list.innerHTML += `<p>口座番号: ${account.accountNumber}, 所有者: ${account.ownerName}, 残高: ${account.balance}円</p>`;
+                });
+            });
+
+            function showMessage(msg) {
+                document.getElementById('message').innerHTML = `<p>${msg}</p>`;
+            }
+        })();
     </script>
 </body>
 </html>
