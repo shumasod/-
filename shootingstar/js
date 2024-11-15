@@ -1,0 +1,145 @@
+<?php
+// PHP部分はHTMLを出力するだけです
+?>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Shooting Star Game</title>
+    <style>
+        #gameCanvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // プレイヤー
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height - 30,
+            width: 50,
+            height: 50
+        };
+
+        // 弾
+        let bullets = [];
+
+        // 流れ星
+        let stars = [];
+
+        // キー入力の状態
+        const keys = {};
+
+        function drawPlayer() {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function drawBullets() {
+            ctx.fillStyle = 'red';
+            bullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, 5, 10);
+            });
+        }
+
+        function drawStars() {
+            ctx.fillStyle = 'yellow';
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function updateBullets() {
+            bullets = bullets.filter(bullet => bullet.y > 0);
+            bullets.forEach(bullet => {
+                bullet.y -= 5;
+            });
+        }
+
+        function updateStars() {
+            stars = stars.filter(star => star.y < canvas.height);
+            stars.forEach(star => {
+                star.y += 2;
+            });
+
+            if (Math.random() < 0.02) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: 0
+                });
+            }
+        }
+
+        function checkCollisions() {
+            stars = stars.filter(star => {
+                return !bullets.some(bullet => {
+                    const dx = star.x - bullet.x;
+                    const dy = star.y - bullet.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    return distance < 10;
+                });
+            });
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (keys.ArrowLeft && player.x > 0) player.x -= 5;
+            if (keys.ArrowRight && player.x < canvas.width - player.width) player.x += 5;
+
+            drawPlayer();
+            drawBullets();
+            drawStars();
+            updateBullets();
+            updateStars();
+            checkCollisions();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'Space') {
+                bullets.push({
+                    x: player.x + player.width / 2,
+                    y: player.y
+                });
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#000033"/>
+  
+  <!-- 星 -->
+  <circle cx="100" cy="100" r="5" fill="yellow"/>
+  <circle cx="300" cy="200" r="5" fill="yellow"/>
+  <circle cx="500" cy="150" r="5" fill="yellow"/>
+  <circle cx="700" cy="50" r="5" fill="yellow"/>
+  
+  <!-- プレイヤー -->
+  <rect x="375" y="550" width="50" height="50" fill="blue"/>
+  
+  <!-- 弾 -->
+  <rect x="395" y="500" width="5" height="10" fill="red"/>
+  <rect x="395" y="400" width="5" height="10" fill="red"/>
+  
+  <!-- テキスト -->
+  <text x="10" y="30" fill="white" font-family="Arial" font-size="20">Shooting Star Game</text>
+</svg>

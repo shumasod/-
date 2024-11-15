@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQLクエリチャレンジ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/theme/dracula.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .sql-editor {
+      margin-bottom: 20px;
+    }
+    .CodeMirror {
+      height: auto;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    #result {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+    .table-structure {
+      margin-top: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>SQLクエリチャレンジ</h1>
+  <div class="table-structure">
+    <h2>テーブル構造: users</h2>
+    <table>
+      <tr>
+        <th>カラム名</th>
+        <th>データ型</th>
+        <th>制約</th>
+      </tr>
+      <tr>
+        <td>id</td>
+        <td>INTEGER</td>
+        <td>PRIMARY KEY</td>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>VARCHAR(50)</td>
+        <td>NOT NULL</td>
+      </tr>
+      <tr>
+        <td>email</td>
+        <td>VARCHAR(100)</td>
+        <td>UNIQUE</td>
+      </tr>
+      <tr>
+        <td>age</td>
+        <td>INTEGER</td>
+        <td></td>
+      </tr>
+    </table>
+  </div>
+  <p>以下のSQLクエリを実行してください: <code>SELECT * FROM users WHERE name = 'Alice';</code></p>
+  <div class="sql-editor">
+    <textarea id="sql-query"></textarea>
+  </div>
+  <button onclick="runQuery()">クエリを実行</button>
+  <h2>実行結果:</h2>
+  <pre id="result"></pre>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/sql/sql.min.js"></script>
+  <script>
+    var editor = CodeMirror.fromTextArea(document.getElementById('sql-query'), {
+      mode: 'text/x-sql',
+      theme: 'dracula',
+      lineNumbers: true,
+      autofocus: true
+    });
+
+    function runQuery() {
+      const query = editor.getValue();
+      fetch('/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ query })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          document.getElementById('result').textContent = 'エラー: ' + data.error;
+        } else {
+          const resultTable = createResultTable(data.data);
+          document.getElementById('result').innerHTML = '';
+          document.getElementById('result').appendChild(resultTable);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    function createResultTable(data) {
+      const table = document.createElement('table');
+      const headerRow = document.createElement('tr');
+      
+      // ヘッダーの作成
+      Object.keys(data[0]).forEach(key => {
+        const th = document.createElement('th');
+        th.textContent = key;
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      // データ行の作成
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        Object.values(row).forEach(value => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+
+      return table;
+    }
+  </script>
+</body>
+</html>
