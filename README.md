@@ -1,128 +1,195 @@
+# ごはんですよ！アプリケーション開発ガイド
 
-
-# ごはんですよとメッセージを表示するサイトを作成
-
-## 環境
-
-- PHP 8.3
+## 環境要件
+- PHP 8.3以上
 - Laravel 11
-- Laravel Sail (Docker を使用)
+- Docker Desktop
+- Composer 2.x
+- Node.js 20.x以上
 
-### 前提条件
-
-- Composer がインストールされている
-- Artisan コマンドが使用可能
-
-## 手順
+## セットアップ手順
 
 ### 1. プロジェクトの作成
-
+```bash
+curl -s "https://laravel.build/gohan-ok" | bash
+cd gohan-ok
 ```
-composer create-project laravel/laravel gohan-ok
-```
 
-### 2. 依存関係のインストール
-
-Node.js の依存関係をインストールします。
-
-```
-npm install
+### 2. アプリケーションの初期設定
+```bash
+./vendor/bin/sail up -d
+./vendor/bin/sail composer install
+./vendor/bin/sail npm install
 ```
 
 ### 3. ルートの設定
-
-`routes/web.php` ファイルを編集し、ルートを設定します。
+`routes/web.php` に以下を追加:
 
 ```php
-Route::get('/', function () {
-    return view('welcome');
-});
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GohanController;
+
+Route::get('/', [GohanController::class, 'index'])->name('gohan.index');
 ```
 
-### 4. ビューの作成
+### 4. コントローラーの作成
+```bash
+./vendor/bin/sail artisan make:controller GohanController
+```
 
-`resources/views/welcome.blade.php` ファイルを作成し、以下の内容を記述します。
+`app/Http/Controllers/GohanController.php`:
+```php
+<?php
 
-```html
-<html>
+namespace App\Http\Controllers;
+
+use Illuminate\View\View;
+
+class GohanController extends Controller
+{
+    public function index(): View
+    {
+        return view('gohan.index');
+    }
+}
+```
+
+### 5. Bladeビューの作成
+`resources/views/gohan/index.blade.php`:
+```php
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ごはんですよ！</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <h1>ごはんですよ！</h1>
+<body class="antialiased">
+    <div id="app">
+        <gohan-message></gohan-message>
+    </div>
 </body>
 </html>
 ```
 
-（注: フォームの実装はBootstrapを使用する予定）
-
-### 5. Bladeの作成
-
-`resources/views/components/gohan-ok.blade.php` ファイルを作成し、以下の内容を記述します。
-
-```html
-<script>
-import Vue from 'vue'
-import { Library } from '@fortawesome/fontawesome-svg-core'
-import { faUtensils } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-Library.add(faUtensils)
-Vue.component('font-awesome-icon', FontAwesomeIcon)
-
-Vue.component('gohan-ok', {
-  template: `
-    <div>
-      <h1>{{ showGohanText ? '🍱ごはんですよ' : '' }}</h1>
-      <div :style="{ fontSize: '5rem', fontFamily: 'cursive' }">{{ showGohanText ? '🍱ごはんですよ' : '' }}</div>
+### 6. Vueコンポーネントの作成
+`resources/js/components/GohanMessage.vue`:
+```vue
+<template>
+    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4" :class="{ 'animate-bounce': showMessage }">
+                {{ message }}
+            </h1>
+            <div class="text-xl text-gray-600">
+                現在時刻: {{ currentTime }}
+            </div>
+        </div>
     </div>
-  `,
-  data() {
-    return {
-      showGohanText: false
-    }
-  },
-  mounted() {
-    this.checkTime()
-    setInterval(this.checkTime, 60000) // 1分ごとに時間をチェック
-  },
-  methods: {
-    checkTime() {
-      const now = new Date()
-      const hour = now.getHours()
-      const minute = now.getMinutes()
+</template>
 
-      if (hour === 18 && minute === 0) {
-        this.showGohanText = true
-        alert('ごはんですよ!')
-      } else {
-        this.showGohanText = false
-      }
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const message = ref('')
+const showMessage = ref(false)
+const currentTime = ref('')
+
+const checkTime = () => {
+    const now = new Date()
+    currentTime.value = now.toLocaleTimeString()
+    
+    const hour = now.getHours()
+    const minute = now.getMinutes()
+    
+    if (hour === 18 && minute === 0) {
+        message.value = '🍱 ごはんですよ！'
+        showMessage.value = true
+        new Notification('ごはんですよ！', {
+            body: '夕食の時間です！',
+            icon: '/favicon.ico'
+        })
+    } else {
+        message.value = '🕒 まだごはんの時間ではありません'
+        showMessage.value = false
     }
-  }
+}
+
+onMounted(() => {
+    if ('Notification' in window) {
+        Notification.requestPermission()
+    }
+    
+    checkTime()
+    setInterval(checkTime, 1000)
 })
 </script>
 ```
 
-（注: 18時になると、「ごはんですよ！」とアラートを表示する）
+### 7. Vueの設定
+`resources/js/app.js`:
+```javascript
+import './bootstrap';
+import { createApp } from 'vue'
+import GohanMessage from './components/GohanMessage.vue'
 
-### 6. TailwindCSSの設定
-
-`resources/css/app.css` ファイルを編集し、以下の内容を記述します。
-
-```css
-@import "~tailwindcss/dist/tailwind.css";
+const app = createApp({})
+app.component('gohan-message', GohanMessage)
+app.mount('#app')
 ```
 
-### 7. 実行
-
-最後に、アプリケーションを実行します。
-
+### 8. TailwindCSSの設定
+`tailwind.config.js`:
+```javascript
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: [
+        "./resources/**/*.blade.php",
+        "./resources/**/*.js",
+        "./resources/**/*.vue",
+    ],
+    theme: {
+        extend: {
+            animation: {
+                bounce: 'bounce 1s infinite',
+            }
+        },
+    },
+    plugins: [],
+}
 ```
-php artisan serve
-npm run dev
+
+### 9. 開発サーバーの起動
+```bash
+./vendor/bin/sail npm run dev
 ```
 
-（注: マイグレーションファイルの実行が必要な場合は、適切なタイミングで実行してください）
+別のターミナルで:
+```bash
+./vendor/bin/sail up
+```
 
-このReadmeでは、Laravel 9.xとLaravel Sailを使用して、18時になると「ごはんですよ！」というメッセージを表示するサイトを作成する手順を説明しています。プロジェクトの作成、ルート設定、ビューの作成、Bladeコンポーネントの作成、TailwindCSSの設定、アプリケーションの実行までの流れが記載されています。
+## 主な機能
+- 18時になると「ごはんですよ！」というメッセージを表示
+- ブラウザ通知機能によるデスクトップ通知
+- リアルタイムの時刻表示
+- アニメーション効果
+- レスポンシブデザイン
+
+## 注意事項
+- ブラウザ通知を有効にするには、ユーザーの許可が必要です
+- 開発環境では `http://localhost` でアクセスできます
+- 本番環境にデプロイする際は、適切なセキュリティ設定を行ってください
+
+## トラブルシューティング
+1. コンテナが起動しない場合:
+```bash
+./vendor/bin/sail down --rmi all -v
+./vendor/bin/sail up -d
+```
+
+2. Node.jsの依存関係でエラーが発生する場合:
+```bash
+./vendor/bin/sail npm clean-install
+```
