@@ -1,6 +1,6 @@
 provider "google" {
   project = ""
-  region  = "us-central1"
+  region  = ap-northeast1"
 }
 
 resource "google_compute_instance" "default" {
