@@ -9,10 +9,17 @@ const db = new sqlite3.Database(':memory:');
 
 // 簡単なデータベースとテーブルの作成
 db.serialize(() => {
-  db.run("CREATE TABLE users (id INT, name TEXT)");
-  db.run("INSERT INTO users (id, name) VALUES (1, 'Alice')");
-  db.run("INSERT INTO users (id, name) VALUES (2, 'Bob')");
-  db.run("INSERT INTO users (id, name) VALUES (3, 'Charlie')");
+  db.run(`
+    CREATE TABLE users (
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE,
+      age INTEGER
+    )
+  `);
+  db.run("INSERT INTO users (id, name, email, age) VALUES (1, 'Alice', 'alice@example.com', 30)");
+  db.run("INSERT INTO users (id, name, email, age) VALUES (2, 'Bob', 'bob@example.com', 24)");
+  db.run("INSERT INTO users (id, name, email, age) VALUES (3, 'Charlie', 'charlie@example.com', 28)");
 });
 
 // ミドルウェア
